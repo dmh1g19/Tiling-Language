@@ -1,0 +1,144 @@
+Q1 
+
+-* => RepeatH
++* => RepeatV
+-& => AppendH
++& => AppendV
+
+import tile1.file as tile1;
+import tile2.file as tile2;
+
+Base row1 = [tile1 | tile2];
+Base row2 = [tile2 | tile1];
+
+row1 = row1 -* 32;
+row2 = row2 -* 32;
+
+Base output = row1 +& row2;
+
+repeat 32 do
+    output = output +& output;
+end;
+
+print output;
+
+Q2
+
+import tile1.file as tile1;
+
+Tile topL = tile1;
+Tile topR = rotate 90 tile1 CW;
+Tile bottomL = rotate 270 tile1 CW;
+Tile bottomR = rotate 180 tile1 CW;
+
+Base top = topL -& topR;
+Base bottom = bottomL -& bottomR;
+Base originTile = top +& bottom;
+
+Base expandedTile = expand g by 3;
+Int originL = get length originTile;
+Int expandedL = get length expandedTile;
+Int repeatFactor = expandedL / originL;
+
+Base hSide = originTile -* repeatFactor + 2;
+Base vSide = originTile +* repeatFactor;
+
+Base middle = vSide -& expandedTile -& vSide;
+Base output = hSide +& middle +& hSide;
+
+print output;
+
+Q3
+
+import tile1.file as tile1;
+
+Int middle = (get length tile1) / 2;
+Tile tileY = reflect tile1 on row middle;
+Tile tileX = reflect tile1 on col middle;
+Tile tileXY = reflect tileY on col middle;
+Tile blank = ['0'];
+blank = expand blank by (get length tile1);
+
+Base top = tile1 -& tileY -& blank;
+Base bottom = blank -& tileX -& tileXY;
+Base object = top +& bottom;
+middle = (get length object) / 2;
+Base objectX = reflect object on col middle;
+
+Base output = object -& objectX;
+output = output -* 10;
+output = output +* 30;
+
+print output;
+
+Q4
+
+import tile1.file as tile1;
+import tile2.file as tile2;
+import tile3.file as tile3;
+
+Tile negTile3 = neg tile3;
+Tile tile1AndNeg3 = and tile1 negTile3;
+Tile tile2AndNeg3 = and tile2 negTile3;
+
+Tile blank = ['0'];
+blank = expand blank by (get length tile1);
+
+Int co = 0;
+Int ro = 0;
+
+Base output = [];
+
+while (co < 25) do
+    Base newRow = [];
+
+    while (ro < 50) do
+        if ((ro + co) < 50) then {
+            newRow = newRow -& tile1AndNeg3;
+        } else {
+            newRow = newRow -& blank;
+        };
+        ro = ro + 1;
+    end;
+
+    output = output +& newRow;
+    ro = 0;
+    co = co + 1;
+end;
+
+ro = 0;
+
+while ((co >= 25) && (co < 50)) do
+    Base newRow = [];
+    
+    while (ro < 50) do
+        if (ro <= co) then {
+            newRow = newRow -& tile2AndNeg3;
+        } else {
+            newRow = newRow -& blank;
+        };
+        ro = ro + 1;
+    end;
+
+    output = output +& newRow;
+    ro = 0;
+    co = co + 1;
+end;
+
+print output;
+
+Q5
+
+import tile1.file as tile1;
+
+Tile subtile1 = take 0 0 size 6 from tile1;
+Tile subtile2 = take 2 2 size 6 from tile1;
+Tile subtile3 = take 4 4 size 6 from tile1;
+
+Base row1 = subtile1 -* 3;
+Base row2 = subtile2 -* 3;
+Base row3 = subtile3 -* 3;
+
+Base output = row1 +& row2 +& row3;
+
+print output;
