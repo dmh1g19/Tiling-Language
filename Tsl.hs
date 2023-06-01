@@ -1,38 +1,25 @@
-import Token
+import Token 
 import Grammar
-import Types
-import Eval 
+import Eval
 import System.Environment
 import Control.Exception
 import System.IO
+import Types
 
 main :: IO ()
 main = catch main' noParse
 
-main' = do (fileName : _ ) <- getArgs
+main' = do (fileName : _ ) <- getArgs 
            sourceText <- readFile fileName
-           putStrLn ("Plain text: " ++ sourceText)
-          
            let tokens = alexScanTokens sourceText
-           putStrLn ("Tokens: " ++ (show tokens) ++ "\n")
-
-           let parsed = parseCalc (alexScanTokens sourceText)
-           putStrLn ("Parsed: " ++ (show parsed) ++ "\n")
-
-           let typed = (result (typeof (parsed,[])))
-           putStrLn ("Type check: " ++ (show typed) ++ "\n")
-           
-           putStrLn ("Evaluated: ")
-           result <- evalLoop parsed
-           print result
-
-           --let a@(x,y,z) = eval1 (parsed,[],[])
-           --putStrLn ("Evaluated: " ++ (show a) ++ "\n")
-          
-          -- Finally, perform evaluation (one step)
-           --x <- eval1 (parsed,[],[])
-           --putStrLn $ show x
-
+           let parsedProg = parseCalc (alexScanTokens sourceText)
+           let types = checkType parsedProg
+           eval (parsedProg, [], [])
+               where eval :: State -> IO()
+                     eval x = do y <- eval1 x
+                                 if halt x y
+                                 then return () 
+                                 else eval y
 
 noParse :: ErrorCall -> IO ()
 noParse e = do let err =  show e

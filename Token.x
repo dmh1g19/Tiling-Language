@@ -11,21 +11,15 @@ $alpha = [a-zA-Z]
 --lower case alphabet
 $alphaLower = [a-z]
 --special
-$special = [\_\’\.] 
+$special = [\_\’] 
 
 tokens :-
   $white+ ;
   "//".*  ;
-  Tile                                    { \p s -> TokenTypeTile p }
   Base                                    { \p s -> TokenTypeBase p }
   Int                                     { \p s -> TokenTypeInt p }
   Bool                                    { \p s -> TokenTypeBool p }
-  CellList                                { \p s -> TokenCellListType p }
-  TileList                                { \p s -> TokenTileListType p }
-  tiles                                   { \p s -> TokenTiles p }
   cells                                   { \p s -> TokenCells p }
-  True                                    { \p s -> TokenTrue p}
-  False                                   { \p s -> TokenFalse p}
   rotate                                  { \p s -> TokenRotate p }
   CW                                      { \p s -> TokenDirCw p }
   ACW                                     { \p s -> TokenDirAcw p }
@@ -34,7 +28,6 @@ tokens :-
   row                                     { \p s -> TokenRow p }
   col                                     { \p s -> TokenCol p }
   expand                                  { \p s -> TokenExpand p }
-  shrink                                  { \p s -> TokenShrink p }
   by                                      { \p s -> TokenBy p }
   take                                    { \p s -> TokenTake p }
   size                                    { \p s -> TokenSize p }
@@ -62,7 +55,6 @@ tokens :-
   \;                                      { \p s -> TokenSem p }
   \:                                      { \p s -> TokenColon p }
   \.                                      { \p s -> TokenDot p }
-  \,                                      { \p s -> TokenComma p }
   \(                                      { \p s -> TokenLParen p }
   \)                                      { \p s -> TokenRParen p }
   \[                                      { \p s -> TokenLBracket p }
@@ -98,18 +90,11 @@ tok f p s = f p s
 
 data Token =
   TokenDo AlexPosn                    |
-  TokenComma AlexPosn                 |
-  TokenCellListType AlexPosn          |
-  TokenTileListType AlexPosn          |
-  TokenTiles AlexPosn                 |
   TokenColon AlexPosn                 |
   TokenCells AlexPosn                 |
   TokenTypeBool AlexPosn              |
-  TokenTypeTile AlexPosn              |
   TokenTypeBase AlexPosn              |
   TokenTypeInt AlexPosn               |
-  TokenTrue AlexPosn                  |
-  TokenFalse AlexPosn                 |
   TokenRotate AlexPosn                |
   TokenDirCw AlexPosn                 |
   TokenDirAcw AlexPosn                |
@@ -118,7 +103,6 @@ data Token =
   TokenRow AlexPosn                   |
   TokenCol AlexPosn                   |
   TokenExpand AlexPosn                |
-  TokenShrink AlexPosn                |
   TokenBy AlexPosn                    |  
   TokenTake AlexPosn                  |
   TokenSize AlexPosn                  |
@@ -174,20 +158,15 @@ data Token =
   deriving (Eq,Show)
 
 tokenPosn :: Token -> String
-tokenPosn (TokenCellListType (AlexPn a l c))      = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenTileListType (AlexPn a l c))      = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenColon (AlexPn a l c))             = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenColon (AlexPn a l c))              = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenOrOp (AlexPn a l c))              = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenAndOp (AlexPn a l c))             = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenDo (AlexPn a l c))                = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenDot (AlexPn a l c))               = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenFile (AlexPn a l c))              = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenTypeTile (AlexPn a l c))          = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenTypeBool (AlexPn a l c))          = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenTypeBase (AlexPn a l c))          = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenTypeInt (AlexPn a l c))           = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenTrue (AlexPn a l c))              = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenFalse (AlexPn a l c))             = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenRotate (AlexPn a l c))            = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenDirCw (AlexPn a l c))             = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenDirAcw (AlexPn a l c))            = show(l) ++ ":" ++ show(c)
@@ -196,7 +175,6 @@ tokenPosn (TokenOn (AlexPn a l c))                = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenRow (AlexPn a l c))               = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenCol (AlexPn a l c))               = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenExpand (AlexPn a l c))            = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenShrink (AlexPn a l c))            = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenBy (AlexPn a l c))                = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenTake (AlexPn a l c))              = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenSize (AlexPn a l c))              = show(l) ++ ":" ++ show(c)
@@ -245,6 +223,5 @@ tokenPosn (TokenBlank (AlexPn a l c))             = show(l) ++ ";" ++ show(c)
 tokenPosn (TokenFilled (AlexPn a l c))            = show(l) ++ ";" ++ show(c)
 tokenPosn (TokenIdentifier (AlexPn a l c) _)      = show(l) ++ ":" ++ show(c)
 tokenPosn (TokenInteger (AlexPn a l c) _)         = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenTiles (AlexPn a l c))      = show(l) ++ ":" ++ show(c)
-tokenPosn (TokenCells (AlexPn a l c))      = show(l) ++ ":" ++ show(c)
+tokenPosn (TokenCells (AlexPn a l c))             = show(l) ++ ":" ++ show(c)
 }

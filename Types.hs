@@ -1,117 +1,162 @@
+-- Types.hs
+
 module Types where
+
 import Grammar
-import Control.Monad.Error
+import Data.List (nub)
 
-type TypeEnv = [(String,Type)]
+-- Type Environment
+type TypeEnvironment = [(String, Type)]
 
-lookup1 :: String -> TypeEnv -> Maybe Type
-lookup1 x [] = Nothing
-lookup1 x env | x == (fst (head env)) =  Just (snd (head env))
-              | otherwise = lookup1 x (tail env)
+-- Retrieves the type binding for a given variable
+getBinding :: String -> TypeEnvironment -> Type
+getBinding x [] = NoType
+getBinding x ((y, t) : tenv)
+  | x == y = t
+  | otherwise = getBinding x tenv
 
-addBinding :: String -> Type -> TypeEnv -> TypeEnv
-addBinding x typ [] = [(x,typ)]
-addBinding x typ ((y,e):env) | x == y = (y,e):env
-                             | otherwise = (y,e):(addBinding x typ env)
+-- Adds a type binding for a variable to the environment
+addBinding :: String -> Type -> TypeEnvironment -> TypeEnvironment
+addBinding x t tenv = (x, t) : tenv
 
-data TypeError = TypeMismatch Type Type | NotFound  deriving Eq
+-- Determines the type of an expression in the given type environment
+typeOf :: TypeEnvironment -> Exp -> Type
+typeOf tenv (TmInt _) = IntType -- Basic types
+typeOf tenv (TmVar x) = getBinding x tenv
+typeOf tenv (TmBool _) = BoolType
+typeOf tenv (TmCellList _) = BaseType
 
-instance Error TypeError where
-    noMsg = NotFound
-     
+-- Calculations
+typeOf tenv (TmParen e) = typeOf tenv e
+typeOf tenv (TmDiv e1 e2)
+  | typeOf tenv e1 == IntType && typeOf tenv e2 == IntType = IntType
+typeOf tenv (TmTimes e1 e2)
+  | typeOf tenv e1 == IntType && typeOf tenv e2 == IntType = IntType
+typeOf tenv (TmPlus e1 e2)
+  | typeOf tenv e1 == IntType && typeOf tenv e2 == IntType = IntType
+typeOf tenv (TmMinus e1 e2)
+  | typeOf tenv e1 == IntType && typeOf tenv e2 == IntType = IntType
 
-instance Show TypeError where
-    show (TypeMismatch a b) = "Type Mismatch: " ++ show a ++ " is not " ++ show b
-    show (NotFound) = "Variable not found in type environment"
+-- Getters
+typeOf tenv (TmGetLength x)
+  | getBinding x tenv == BaseType = IntType
+typeOf tenv (TmGetWidth x)
+  | getBinding x tenv == BaseType = IntType
 
-typeof :: (Exp,TypeEnv) -> Either TypeError Type
-typeof (expr,env) = case expr of 
-    TmInt x -> return IntType
-    
-    TmTrue -> return BoolType
-    
-    TmFalse -> return BoolType
-    
-    TmCellList x -> return CellListType
-    
-    TmVar x -> do
-        let type1 = lookup1 x env
-        if (type1 == Just IntType)
-        then return IntType
-        else 
-            if (type1 == Just BoolType)
-            then return BoolType
-            else 
-                if (type1 == Just CellListType)
-                then return CellListType
-                else throwError $ NotFound
+-- Comparisons
+typeOf tenv (TmComLT n1 n2)
+  | typeOf tenv n1 == IntType && typeOf tenv n2 == IntType = BoolType
+typeOf tenv (TmComGT n1 n2)
+  | typeOf tenv n1 == IntType && typeOf tenv n2 == IntType = BoolType
+typeOf tenv (TmComGTEQ n1 n2)
+  | typeOf tenv n1 == IntType && typeOf tenv n2 == IntType = BoolType
+typeOf tenv (TmComLTEQ n1 n2)
+  | typeOf tenv n1 == IntType && typeOf tenv n2 == IntType = BoolType
+typeOf tenv (TmComEQ e1 e2)
+  | typeOf tenv e1 == typeOf tenv e2 = BoolType
+typeOf tenv (TmComNOT e1 e2)
+  | typeOf tenv e1 == typeOf tenv e2 = BoolType
 
-    TmCont (TmTypeAssign t x e) e2 -> do 
-        te2 <- typeof(e2, addBinding x t env) 
-        return te2 
+-- Logical AND OR
+typeOf tenv (TmAndOp e1 e2)
+  | typeOf tenv e1 == BoolType && typeOf tenv e2 == BoolType = BoolType
+typeOf tenv (TmOrOp e1 e2)
+  | typeOf tenv e1 == BoolType && typeOf tenv e2 == BoolType = BoolType
 
-    TmCont e1 e2 -> do 
-        te1 <- typeof (e1,env)
-        te2 <- typeof (e2,getEnv (e1,env))
-        return te2
-    
-    TmTypeAssign t x e -> do
-        return t
+-- Append
+typeOf tenv (TmAppendH x1 x2)
+  | getBinding x1 tenv == getBinding x2 tenv
+    && getBinding x1 tenv == BaseType = BaseType
+typeOf tenv (TmAppendV x1 x2)
+  | getBinding x1 tenv == getBinding x2 tenv
+    && getBinding x1 tenv == BaseType = BaseType
 
-    -- Import statement not type checked
-    -- probably needs to be checked during run time
-    TmImport x1 x2 -> do
-      return CellListType
+-- Object repeat
+typeOf tenv (TmRepeatH x e)
+  | getBinding x tenv == BaseType && typeOf tenv e == IntType = BaseType
+typeOf tenv (TmRepeatV x e)
+  | getBinding x tenv == BaseType && typeOf tenv e == IntType = BaseType
 
-    TmIterRepeat e1 e2 -> do
-        te1 <- typeof (e1,env)
-        te2 <- typeof (e2,env)
-        if (te1 /= IntType)
-        then throwError $ TypeMismatch te1 IntType
-        else return te2
+-- Rotate
+typeOf tenv (TmRotateCW e x)
+  | typeOf tenv e == IntType && getBinding x tenv == BaseType = BaseType
+typeOf tenv (TmRotateACW e x)
+  | typeOf tenv e == IntType && getBinding x tenv == BaseType = BaseType
 
-    TmAppendH x e -> do
-        let te1 = lookup x env
-        if te1 /= Just CellListType
-        then throwError $ NotFound
-        else return CellListType
-    
-    TmAppendV x e -> do
-        let te1 = lookup x env
-        if te1 /= Just CellListType
-        then throwError $ NotFound
-        else return CellListType
+-- Reflect
+typeOf tenv (TmReflectCol x e)
+  | getBinding x tenv == BaseType && typeOf tenv e == IntType = BaseType
+typeOf tenv (TmReflectRow x e)
+  | getBinding x tenv == BaseType && typeOf tenv e == IntType = BaseType
 
-    TmRepeatH x n -> do
-        let te1 = lookup x env
-        if (te1 /= Just CellListType)
-        then throwError $ NotFound
-        else return CellListType
-    
-    TmRepeatV x n -> do
-        let te1 = lookup x env
-        if (te1 /= Just CellListType)
-        then throwError $ NotFound
-        else return CellListType
+-- Scale
+typeOf tenv (TmExpand x e)
+  | getBinding x tenv == BaseType && typeOf tenv e == IntType = BaseType
 
-    TmPlus e1 e2 -> do
-        te1 <- typeof (e1,env)
-        te2 <- typeof (e2,env)
-        if (te1) /= IntType
-        then throwError $ TypeMismatch te1 IntType
-        else
-            if te2 /= IntType
-            then throwError $ TypeMismatch te2 IntType
-            else return IntType
-      
-getEnv :: (Exp,TypeEnv) -> TypeEnv
-getEnv ((TmTypeAssign t x e),env) = (addBinding x t env)
-getEnv ((TmCont (TmTypeAssign t x e) e2),env) = getEnv (e2,(addBinding x t env))
-getEnv ((TmCont e1 e2),env) = getEnv (e2,getEnv(e1,env))
-getEnv (_,env) = env
+-- Boolean operations on tiles/base objects
+typeOf tenv (TmNeg x)
+  | getBinding x tenv == BaseType = BaseType
+typeOf tenv (TmAnd x1 x2)
+  | getBinding x1 tenv == BaseType && getBinding x2 tenv == BaseType = BaseType
+typeOf tenv (TmOr x1 x2)
+  | getBinding x1 tenv == BaseType && getBinding x2 tenv == BaseType = BaseType
 
-result :: Either TypeError Type -> String
-result (Left e) = show e
-result (Right e) = show e
---result (Right e) = "No type error was found"
+-- Subtile
+typeOf tenv (TmTake e1 e2 e3 x)
+  | (IntType, IntType, IntType) == (typeOf tenv e1, typeOf tenv e2, typeOf tenv e3)
+      && getBinding x tenv == BaseType = BaseType
 
+-- If-then-else
+typeOf tenv (TmIfThenElse e1 e2 e3)
+  | typeOf tenv e1 == BoolType && typeOf tenv e2 == typeOf tenv e3
+      && typeOf tenv e2 /= NoType = typeOf tenv e2
+
+-- If-then
+typeOf tenv (TmIfThen e1 e2)
+  | typeOf tenv e1 == BoolType = typeOf tenv e2
+
+-- Iterations
+typeOf tenv (TmIterRepeat n e)
+  | typeOf tenv n == IntType = typeOf tenv e
+typeOf tenv (TmIterWhile e1 e2)
+  | typeOf tenv e1 == BoolType = typeOf tenv e2
+
+-- Print
+typeOf tenv (TmPrint x)
+  | getBinding x tenv /= NoType = getBinding x tenv
+
+-- Import (check later)
+typeOf tenv (TmImport x1 x2)
+  | getBinding x2 tenv == NoType = typeOf (addBinding x2 BaseType tenv) (TmVar x2)
+
+-- Assign
+typeOf tenv (TmAssign x e)
+  | getBinding x tenv /= NoType
+      && typeOf tenv e == getBinding x tenv = getBinding x tenv
+
+-- TypeAssign
+typeOf tenv (TmTypeAssign t x e)
+  | t == typeOf tenv e = typeOf (addBinding x t tenv) (TmVar x)
+
+-- Stmt && Stmts
+typeOf tenv (TmStmt e) = typeOf tenv e
+typeOf tenv (TmStmts e1 e2)
+  | typeOf tenv e2 /= NoType = typeOf (getEnv tenv e2) e1
+typeOf tenv _ = NoType
+
+-- Return the type environment for a given expression
+getEnv :: TypeEnvironment -> Exp -> TypeEnvironment
+getEnv tenv (TmImport _ x) = addBinding x BaseType tenv
+getEnv tenv (TmTypeAssign t x _) = addBinding x t tenv
+getEnv tenv (TmStmts e1 e2) = getEnv (nub (getEnv tenv e2)) e1
+getEnv tenv (TmStmt e) = getEnv tenv e
+getEnv tenv _ = tenv
+
+unparseType :: Type -> String
+unparseType IntType = "Int"
+unparseType BaseType = "Base"
+
+checkType :: Exp -> String
+checkType e
+  | typeOf [] e == NoType = error "Type Error"
+  | otherwise = "Type check passed"
