@@ -195,4 +195,4 @@ sions used by the interpreter.
 
 ### 6.1 Big step operational semantics
 
-![Alt text](./ttt_big.png)
+![Alt text](./ttt_b.png)
