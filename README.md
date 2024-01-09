@@ -1,6 +1,10 @@
 # Coursework - ’Tiling Toolkit’
 
-## Jiahua Lin Jianing Kong Danny Martinez Hibbert
+## Jiahua Lin
+
+## Jianing Kong
+
+## Danny Martinez Hibbert
 
 ## April 2023
 
