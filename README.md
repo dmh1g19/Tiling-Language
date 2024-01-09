@@ -1,10 +1,10 @@
-# ’Tiling Toolkit’
+# Tiling Toolkit
 
-## Jiahua Lin, Jianing Kong, Danny Martinez Hibbert
+## Jiahua Lin & Jianing Kong & Danny Martinez Hibbert
 
 ## April 2023
 
-## 1 Introduction
+### 1 Introduction
 
 The domain specific programming language we have designed for the tiling problems allows users to build
 and manipulate tile objects. A Tile type is considered to be a collection of discrete cells, where each
@@ -13,7 +13,7 @@ language allows users to perform a variety of tile-specific operations on tiles,
 scaling, sub-tiles and more. Users can also import and manipulate with pre-existing tile patterns, define
 and use variables, and create complex logical expressions and conditions.
 
-## 2 Syntax
+### 2 Syntax
 
 ``` <Type> ::= Int | Base ```
 type of a variable, is either a Base object or an Integer.
@@ -44,196 +44,62 @@ refers to operations that return an Integer, identifier of an Integer variable o
 ``` <logicOp> ```
 refers to operations that return Boolean values (true/false).
 
-## 2.1 Statements, Import, Iterations and Conditions
+#
 
-### Function Syntax Description
-
-### Statements ```<Stmts>; <Stmt>```
-
-``` <Stmts> ``` refers to any operation, followed by ```;```.
-
-Statement ```<Stmt> <Stmt>``` refers to one single operation.
-
-
-## Import import <fileName> as <var>
-
-Given a ```<fileName> ```, read and store
-the content to variable <var> as a
-Base Object.
-If-Then if <logicOp> then {<Operations>} end
-Execute given <Operations> if
-<logicOp> satisfied.
-
-
-```
-If-Then-Else
-if <logicOp> then {<Operations>}
-else {<Operations>} end
-```
-```
-Execute <Operations> within ’then’
-block if <logicOp> satisfied, otherwise
-execute <Operations> in ’else’ block.
-Repeat Loop repeat <numOp> do <Operations> end
-Execute given <Operations> for
-<numOp> of times.
-While Loop while <logicOp> do <operations> end Execute given <Operations> while
-<logicOp> satisfied.
-```
+| Function           | Syntax                               | Description |
+|--------------------|--------------------------------------|-------------|
+| Statements         | `<Stmts>; <Stmt>`                    | `<Stmts>` refers to any operations, followed by `;`. |
+| Statement          | `<Stmt>`                             | `<Stmt>` refers to one single operation. |
+| Import             | `import <fileName> as <var>`         | Given a `<fileName>`, read and store the content to variable `<var>` as a Base Object. |
+| If-Then            | `if <logicOp> then {<Operations>} end`| Execute given `<Operations>` if `<logicOp>` satisfied. |
+| If-Then-Else       | `if <logicOp> then {<Operations>}`<br>`else {<Operations>} end` | Execute `<Operations>` within `then` block if `<logicOp>` satisfied, otherwise execute `<Operations>` in `else` block. |
+| Repeat Loop        | `repeat <numOp> do <Operations> end` | Execute given `<Operations>` for `<numOp>` times. |
+| While Loop         | `while <logicOp> do <operations> end`| Execute given `<Operations>` while `<logicOp>` is satisfied. |
 
 ### 2.2 Variable Assignment
 
-```
-Function Syntax Description
-```
-```
-Variable Assignment <Type> <var> = <Operations>
-```
-```
-Assigning a value to a variable.
-The return type of the operation
-should be matching to the
-indicated type.
-```
-```
-Variable Re-assignment <var> = <Operations>
-```
-```
-Assigning an existing variable to
-a new value. The return type of
-the operation should be the same
-as the current type of the variable.
-```
+| Function              | Syntax                      | Description |
+|-----------------------|-----------------------------|-------------|
+| Variable Assignment   | `<Type> <var> = <Operations>` | Assigning a value to a variable. The operation's return type should match the variable's type. |
+| Variable Re-assignment| `<var> = <Operations>`       | Assigning a new value to an existing variable. The operation's return type should match the variable's current type. |
+
 ### 2.3 Base Object Operations - Return Base Objects
 
-```
-Function Syntax Description
-```
-```
-Cells cells : [<cells>]
-```
-```
-Building a Base Object with filled/blank
-cells. Use vertical bar ’|’ to annotate
-changing of row.
-```
-```
-Repetition
-<baseVar> -* <numOp>
-<baseVar> +* <numOp>
-```
-```
-Horizontally (-*) or vertically (+*)
-append a base object with itself for a
-given number of times.
-Append
-<baseVar> -& <baseVar>
-<baseVar> +& <baseVar>
-```
-```
-Horizontally (-&) or vertically (+&)
-append 2 base objects.
-```
-```
-Rotation
-rotate <baseVar> by <degree> CW
-rotate <baseVar> by <degree> ACW
-```
-```
-Rotate a base object by 90/180/
-degrees (<degree>) in clockwise (CW)
-or anti-clockwise (ACW) direction.
-Reflection
-reflect <baseVar> on row <numOp>
-reflect <baseVar> on col <numOp>
-```
-```
-Reflect a base object on the nth row or
-column.
-Expansion expand <baseVar> by <numOp>
-Expand a base object by a given number
-of times.
-```
-```
-Subtile
-take <row> <col> size
-<numOp> from <baseVar>
-```
-```
-Extract a subtile from a larger base
-object. ‘<row> <col> ’ indicates the
-top-left corner of the subtile and are
-integers. ‘size ’ indicates the size of the
-subtile.
-```
+| Function      | Syntax                                    | Description |
+|---------------|-------------------------------------------|-------------|
+| Cells         | `cells : [<cells>]`                       | Building a Base Object with filled/blank cells. Use vertical bar `|` to denote changing of row. |
+| Repetition    | `<baseVar> -* <numOp>`, `<baseVar> +* <numOp>` | Horizontally (`-*`) or vertically (`+*`) append a base object with itself a given number of times. |
+| Append        | `<baseVar> -& <baseVar>`, `<baseVar> +& <baseVar>` | Horizontally (`-&`) or vertically (`+&`) append two base objects. |
+| Rotation      | `rotate <baseVar> by <degree> CW`, `rotate <baseVar> by <degree> ACW` | Rotate a base object by 90/180/270 degrees (`<degree>`) in clockwise (CW) or anti-clockwise (ACW) direction. |
+| Reflection    | `reflect <baseVar> on row <numOp>`, `reflect <baseVar> on col <numOp>` | Reflect a base object on the nth row or column. |
+| Expansion     | `expand <baseVar> by <numOp>`            | Expand a base object by a given number of times. |
+| Subtile       | `take <row> <col> size <numOp> from <baseVar>` | Extract a subtile from a larger base object. `<row> <col>` indicates the top-left corner, `size` indicates the size of the subtile. |
+
 ### 2.4 Numerical Operations - Return Numerical Values
 
-```
-Function Syntax Description
-Get Tile
-Length/Width
-```
-```
-get length <baseVar>
-get width <baseVar>
-Retrieve the length or width of a base object.
-```
-```
-Arithmetic
-Operations
-```
-```
-<numOp> + <numOp>
-<numOp> - <numOp>
-<numOp> * <numOp>
-<numOp> / <numOp>
-```
-```
-Mathematical calculations, including addition (+),
-subtraction (-), multiplication (*) and division (/).
-```
+| Function               | Syntax                                  | Description |
+|------------------------|-----------------------------------------|-------------|
+| Get Tile Length/Width  | `get length <baseVar>`, `get width <baseVar>` | Retrieve the length or width of a base object. |
+| Arithmetic Operations  | `<numOp> + <numOp>`, `<numOp> - <numOp>`, `<numOp> * <numOp>`, `<numOp> / <numOp>` | Perform mathematical calculations including addition, subtraction, multiplication, and division. |
+
 
 ### 2.5 Logical Operations - Return Boolean Values
 
-```
-Function Syntax Description
-```
-```
-Numerical
-Comparisons
-```
-```
-(<numOp> < <numOp>)
-<numOp> > <numOp>)
-(<numOp> <= <numOp>)
-(<numOp> >= <numOp>)
-(<numOp> == <numOp>)
-(<numOp> != <numOp>)
-```
-```
-Comparisons between numbers, including
-less than (<), larger than (>), less than
-or equal to (<=), larger than or equal to
-(>=), equal (==) and not equal (!=).
-All comparisons should be wrapped in
-parentheses.
-```
-```
-Logical And/Or
-<numCom> && <numCom>
-<numCom> || <numCom>
-```
-```
-Logical conjunction operator (&&) and
-logical dis-junction operator (||).
-Numerical comparisons should be wrap
--ped in parentheses.
-```
+| Function             | Syntax                                | Description |
+|----------------------|---------------------------------------|-------------|
+| Numerical Comparisons| `(<numOp> < <numOp>)`, `(<numOp> > <numOp>)`, `(<numOp> <= <numOp>)`, `(<numOp> >= <numOp>)`, `(<numOp> == <numOp>)`, `(<numOp> != <numOp>)` | Comparisons between numbers including less than, greater than, etc. All comparisons should be wrapped in parentheses. |
+| Logical And/Or       | `<numCom> && <numCom>`, `<numCom> || <numCom>` | Logical AND (&&) and OR (||) operations for combining boolean values. Numerical comparisons should be used within these logical operations. |
+
+
+
+
 ## 3 Language Types
 
-### 3.1 Type Rules
+### 3.1 Inductively defined typing semantics
 
-Γ⊢n:IntInt Γ⊢b:BoolBool
+```
+Γ ⊢ n:Int Γ ⊢ b:Bool -> Bool
+```
 
 ```
 x:T∈Γ
