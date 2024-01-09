@@ -1,4 +1,4 @@
-# Coursework - ’Tiling Toolkit’
+# ’Tiling Toolkit’
 
 ## Jiahua Lin
 
