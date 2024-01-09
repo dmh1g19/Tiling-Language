@@ -15,55 +15,56 @@ and use variables, and create complex logical expressions and conditions.
 
 ## 2 Syntax
 
-### <Type> ::= Int | Base
+``` <Type> ::= Int | Base ```
 type of a variable, is either a Base object or an Integer.
 
-### <var> ::= [a-z][a-zA-z]*
+``` <var> ::= [a-z][a-zA-z]* ```
 variable identifiers, starting with a lower case alphabet and no special char-
 acters are allowed.
 
-### <baseVar>
+``` <baseVar> ```
 refers to identifiers of Base Object variables.
 
-### <fileName>
+``` <fileName> ```
 refers to file names of files that contains a tile/base object. Files must be in the same
 directory as the interpreter. No suffixes required.
 
-### <Operations>
+``` <Operations> ```
 refers to operations that return Base Objects or Integers.
 
-### <cells> ::= (’0’ | ’1’)*
+``` <cells> ::= (’0’ | ’1’)* ```
 ’0’represents a blank cell,’1’represents a filled cell.
 
-### <numCom>
+``` <numCom> ```
 refers to numerical comparisons, operations that return Boolean values.
 
-### <numOp>
+``` <numOp> ```
 refers to operations that return an Integer, identifier of an Integer variable or an Integer.
 
-### <logicOp>
+``` <logicOp> ```
 refers to operations that return Boolean values (true/false).
 
-### 2.1 Statements, Import, Iterations and Conditions
+## 2.1 Statements, Import, Iterations and Conditions
 
-```
-Function Syntax Description
-Statements <Stmts>; <Stmt>
-<Stmts> refers to any operations,
-followed by ’;’.
-Statement <Stmt> <Stmt> refers to one single operation.
-```
-```
-Import import <fileName> as <var>
-```
-```
-Given a <fileName>, read and store
+### Function Syntax Description
+
+### Statements ```<Stmts>; <Stmt>```
+
+``` <Stmts> ``` refers to any operation, followed by ```;```.
+
+Statement ```<Stmt> <Stmt>``` refers to one single operation.
+
+
+## Import import <fileName> as <var>
+
+Given a ```<fileName> ```, read and store
 the content to variable <var> as a
 Base Object.
 If-Then if <logicOp> then {<Operations>} end
 Execute given <Operations> if
 <logicOp> satisfied.
-```
+
+
 ```
 If-Then-Else
 if <logicOp> then {<Operations>}
