@@ -88,7 +88,7 @@ refers to operations that return Boolean values (true/false).
 | Function             | Syntax                                | Description |
 |----------------------|---------------------------------------|-------------|
 | Numerical Comparisons| `(<numOp> < <numOp>)`, `(<numOp> > <numOp>)`, `(<numOp> <= <numOp>)`, `(<numOp> >= <numOp>)`, `(<numOp> == <numOp>)`, `(<numOp> != <numOp>)` | Comparisons between numbers including less than, greater than, etc. All comparisons should be wrapped in parentheses. |
-| Logical And/Or       | `<numCom> && <numCom>`, `<numCom> || <numCom>` | Logical AND (&&) and OR (||) operations for combining boolean values. Numerical comparisons should be used within these logical operations. |
+| Logical And/Or       | `<numCom> && <numCom>`, `<numCom> \|\| <numCom>` | Logical AND (&&) and OR (\|\|) operations for combining boolean values. Numerical comparisons should be used within these logical operations. |
 
 
 
