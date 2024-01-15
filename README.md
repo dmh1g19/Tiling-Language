@@ -6,9 +6,9 @@
 
 ### 1 Introduction
 
-The domain specific programming language we have designed for the tiling problems allows users to build
-and manipulate tile objects. A Tile type is considered to be a collection of discrete cells, where each
-cell may be either filled or empty, and the user can create larger tiles built from sets of small tiles. The
+The domain specific programming language allows users to build and manipulate tile objects. 
+A Tile type is considered to be a collection of discrete cells, where each cell 
+may be either filled or empty, and the user can create larger tiles built from sets of small tiles. The
 language allows users to perform a variety of tile-specific operations on tiles, including rotating, reflecting,
 scaling, sub-tiles and more. Users can also import and manipulate with pre-existing tile patterns, define
 and use variables, and create complex logical expressions and conditions.
